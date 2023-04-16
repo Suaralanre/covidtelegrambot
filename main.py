@@ -24,8 +24,7 @@ keyb = InlineKeyboardMarkup(
 
 
 async def main():
-    # I needed this wrapper function because it gives me better control.
-    # You might not need it at all
+    # I needed this wrapper function for better control.
 
 
     @dp.message_handler(commands=["start"])
@@ -63,7 +62,8 @@ async def main():
    # Ensure that countries data is fully loaded before proceeding
     countries = await country_setup()
     
-    async def check_country(message, country):# Flag to assert that given message matches given country
+    async def check_country(message, country):
+        # Flag to assert that given message matches given country
         match =  message==country
         return match
 
@@ -73,15 +73,10 @@ async def main():
     	# sets up task to check for match for each country in the list simultaneously
         futures = [asyncio.ensure_future(check_country(message.text.lower(), country)) for country in countries]
          
-        results = await asyncio.gather(*futures)# collects results of the tasks when they are completed. Each Task will produce a true or false value
-        return any(results)# returns true if at least one of the results is True, i.e there is at least one country that matches user input
-
-
+        results = await asyncio.gather(*futures)
+        return any(results)#
     @dp.message_handler(country_filter)
-    # Apparently, the custom_filters argument doesn't just any coroutine, 
-    # it wants one that can take the user message, 
-    # process it and then return a boolean to determine whether the message should be processed or not.
-    # This is exactly what country_filter() does
+    
     async def return_api_message(message: types.Message) -> None:
         
         info_country = await summary() #You forgot to await summary() here. It's a coroutine
@@ -89,9 +84,6 @@ async def main():
 
 
         for i in range(len(info_country["Countries"])): 
-            # You iterated over len(len(info_country["Countries"])) 
-            # instead of range(len(info_country["Countries"])). 
-            # The former is not iterable.
             
             if info_country["Countries"][i]["Slug"] == my_input:
                 user_country = info_country["Countries"][i]["Country"]
